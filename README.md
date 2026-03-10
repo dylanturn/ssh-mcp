@@ -48,6 +48,8 @@ All configuration is through **environment variables**:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `SSH_MCP_ALLOWED_CIDRS` | *(empty)* | **Required.** Comma-separated CIDR ranges the agent may SSH into, e.g. `10.0.0.0/8,192.168.0.0/16`. If empty, **all connections are denied**. |
+| `SSH_MCP_HOST_KEY_POLICY` | `reject` | `reject` (default, uses system known_hosts — most secure) or `auto_add` (accept any key, suitable for dynamic VMs on trusted networks). |
+| `SSH_MCP_KNOWN_HOSTS_PATH` | *(none)* | Path to an additional known_hosts file (used when `SSH_MCP_HOST_KEY_POLICY=reject`). |
 | `SSH_MCP_DEFAULT_KEY_PATH` | *(none)* | Path on the server to the default SSH private key file. Overridden per-call via `key_path`. |
 | `SSH_MCP_DEFAULT_TIMEOUT` | `30` | Default command timeout in seconds. |
 | `SSH_MCP_MAX_OUTPUT_BYTES` | `1048576` | Maximum response bytes (stdout+stderr) before truncation (1 MiB). |

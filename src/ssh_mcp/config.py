@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -24,6 +23,14 @@ class Settings(BaseSettings):
     - ``SSH_MCP_TRANSPORT``: ``stdio`` (default) or ``streamable-http``.
     - ``SSH_MCP_HOST``: Bind host for HTTP transport (``0.0.0.0``).
     - ``SSH_MCP_PORT``: Bind port for HTTP transport (8000).
+    - ``SSH_MCP_HOST_KEY_POLICY``: How to handle unknown SSH host keys.
+      ``"reject"`` (default) — only connect to hosts whose keys are in the
+      system known_hosts file (most secure).  ``"auto_add"`` — accept any
+      host key and record it in memory (convenient for dynamic VMs, but
+      susceptible to MITM on first connect).
+    - ``SSH_MCP_KNOWN_HOSTS_PATH``: Path to a known_hosts file loaded in
+      addition to the system default.  Only used when
+      ``SSH_MCP_HOST_KEY_POLICY=reject``.
     """
 
     model_config = SettingsConfigDict(
@@ -32,9 +39,13 @@ class Settings(BaseSettings):
     )
 
     # Security — stored as a raw comma-separated string so pydantic-settings
-    # does not attempt JSON parsing.  Use the ``allowed_cidrs`` property to
-    # get the parsed list.
+    # does not attempt JSON parsing.  Use the ``get_allowed_cidrs()`` method
+    # to get the parsed list.
     allowed_cidrs: str = ""
+
+    # SSH host key verification
+    host_key_policy: str = "reject"
+    known_hosts_path: str | None = None
 
     # SSH defaults
     default_key_path: str | None = None

@@ -107,7 +107,25 @@ class ConnectionPool:
         effective_key = key_path or cfg.default_key_path
 
         client = paramiko.SSHClient()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+        # Host key policy — configurable via SSH_MCP_HOST_KEY_POLICY
+        if cfg.host_key_policy.lower() == "auto_add":
+            # Accept any host key (convenient for dynamic VMs; susceptible to
+            # MITM on first connect — use only on trusted networks).
+            logger.warning(
+                "SSH_MCP_HOST_KEY_POLICY=auto_add: host key will not be "
+                "verified for %s:%s. Set SSH_MCP_HOST_KEY_POLICY=reject for "
+                "production use.",
+                host,
+                port,
+            )
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        else:
+            # Default: reject unknown host keys (requires known_hosts entry)
+            client.set_missing_host_key_policy(paramiko.RejectPolicy())
+            client.load_system_host_keys()
+            if cfg.known_hosts_path:
+                client.load_host_keys(cfg.known_hosts_path)
 
         connect_kwargs: dict = {
             "hostname": host,
