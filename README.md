@@ -96,6 +96,39 @@ Or via CLI flags:
 SSH_MCP_ALLOWED_CIDRS="10.0.0.0/8" ssh-mcp --transport streamable-http --port 8080
 ```
 
+### Docker
+
+A `Dockerfile` and `docker-compose.yml` are included. The container defaults to the `streamable-http` transport on port `8000`.
+
+**Quick start with docker compose:**
+
+```bash
+SSH_MCP_ALLOWED_CIDRS="10.0.0.0/8,192.168.0.0/16" docker compose up
+```
+
+The server is then reachable at `http://localhost:8000/mcp`.
+
+**Optional — use your host SSH keys inside the container:**
+
+The compose file bind-mounts `~/.ssh` (read-only) into `/root/.ssh` so existing keys and `known_hosts` entries are available without any extra configuration. Set `SSH_DIR` to use a different directory:
+
+```bash
+SSH_DIR=/path/to/keys SSH_MCP_ALLOWED_CIDRS="10.0.0.0/8" docker compose up
+```
+
+Remove or comment out the `volumes` block in `docker-compose.yml` if you prefer to supply credentials per-call only.
+
+**Build and run manually with `docker`:**
+
+```bash
+docker build -t ssh-mcp .
+
+docker run --rm \
+  -e SSH_MCP_ALLOWED_CIDRS="10.0.0.0/8" \
+  -p 8000:8000 \
+  ssh-mcp
+```
+
 ---
 
 ## MCP Tool Reference

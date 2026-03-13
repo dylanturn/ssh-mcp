@@ -1,0 +1,35 @@
+services:
+  ssh-mcp:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # REQUIRED: comma-separated CIDR ranges the agent is allowed to SSH into.
+      # All connections are denied when this is empty.
+      # Example: SSH_MCP_ALLOWED_CIDRS=10.0.0.0/8,192.168.0.0/16
+      SSH_MCP_ALLOWED_CIDRS: ${SSH_MCP_ALLOWED_CIDRS:-}
+
+      # Transport is fixed to streamable-http inside the container.
+      SSH_MCP_TRANSPORT: streamable-http
+      SSH_MCP_HOST: "0.0.0.0"
+      SSH_MCP_PORT: "8000"
+
+      # Optional tuning — uncomment and adjust as needed.
+      # SSH_MCP_HOST_KEY_POLICY: reject     # or auto_add
+      # SSH_MCP_KNOWN_HOSTS_PATH: /root/.ssh/known_hosts
+      # SSH_MCP_DEFAULT_KEY_PATH: /root/.ssh/id_rsa
+      # SSH_MCP_DEFAULT_TIMEOUT: "30"
+      # SSH_MCP_MAX_OUTPUT_BYTES: "1048576"
+      # SSH_MCP_POOL_MAX_IDLE: "5"
+      # SSH_MCP_LOG_LEVEL: INFO
+
+    volumes:
+      # Mount your host SSH directory so the server can use existing keys and
+      # known_hosts entries.  Remove this block if you prefer to supply
+      # credentials per-call only.
+      - type: bind
+        source: ${SSH_DIR:-${HOME}/.ssh}
+        target: /root/.ssh
+        read_only: true
+
+    restart: unless-stopped
