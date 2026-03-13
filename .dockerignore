@@ -1,0 +1,28 @@
+# Git
+.git
+.gitignore
+
+# Python byte-code and caches
+__pycache__
+*.py[cod]
+*.pyo
+.pytest_cache
+.ruff_cache
+.mypy_cache
+
+# Build / distribution artefacts
+*.egg-info
+dist
+build
+.hatch
+
+# Virtual environments
+.venv
+venv
+env
+
+# Editor / OS metadata
+.DS_Store
+.idea
+.vscode
+*.swp
